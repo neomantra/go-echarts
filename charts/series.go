@@ -89,7 +89,8 @@ type SingleSeries struct {
 	AnimationDelayUpdate    int    `json:"animationDelayUpdate,omitempty"`
 
 	// series data
-	Data interface{} `json:"data"`
+	Data         interface{} `json:"data,omitempty"`
+	DatasetIndex int         `json:"datasetIndex,omitempty"`
 
 	// series options
 	*opts.Encode        `json:"encode,omitempty"`
@@ -492,5 +493,12 @@ func (ms *MultiSeries) SetSeriesOptions(opts ...SeriesOpts) {
 func WithEncodeOpts(opt opts.Encode) SeriesOpts {
 	return func(s *SingleSeries) {
 		s.Encode = &opt
+	}
+}
+
+// WithDatasetIndex sets the datasetIndex option.
+func WithDatasetIndex(index int) SeriesOpts {
+	return func(s *SingleSeries) {
+		s.DatasetIndex = index
 	}
 }

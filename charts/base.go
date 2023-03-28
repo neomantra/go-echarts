@@ -23,7 +23,6 @@ type BaseConfiguration struct {
 	opts.Tooltip      `json:"tooltip"`
 	opts.Toolbox      `json:"toolbox"`
 	opts.Title        `json:"title"`
-	opts.Dataset      `json:"dataset"`
 	opts.Polar        `json:"polar"`
 	opts.AngleAxis    `json:"angleAxis"`
 	opts.RadiusAxis   `json:"radiusAxis"`
@@ -54,6 +53,8 @@ type BaseConfiguration struct {
 	// from this list as the colors of series.
 	Colors      []string
 	appendColor []string // append customize color to the Colors(reverse order)
+
+	DatasetList []opts.Dataset `json:"dataset,omitempty"`
 
 	DataZoomList  []opts.DataZoom  `json:"datazoom,omitempty"`
 	VisualMapList []opts.VisualMap `json:"visualmap,omitempty"`
@@ -115,7 +116,13 @@ func (bc *BaseConfiguration) json() map[string]interface{} {
 		"legend":  bc.Legend,
 		"tooltip": bc.Tooltip,
 		"series":  bc.MultiSeries,
-		"dataset": bc.Dataset,
+	}
+	// if only one item, use it directly instead of an Array
+	if len(bc.DatasetList) == 1 {
+		obj["dataset"] = bc.DatasetList[0]
+	} else if len(bc.DatasetList) > 1 {
+		obj["dataset"] = bc.DatasetList
+
 	}
 	if bc.AxisPointer != nil {
 		obj["axisPointer"] = bc.AxisPointer
@@ -189,6 +196,11 @@ func (bc *BaseConfiguration) json() map[string]interface{} {
 // GetAssets returns the Assets options.
 func (bc *BaseConfiguration) GetAssets() opts.Assets {
 	return bc.Assets
+}
+
+// AddDataset adds a Dataset to this chart
+func (bc *BaseConfiguration) AddDataset(dataset ...opts.Dataset) {
+	bc.DatasetList = append(bc.DatasetList, dataset...)
 }
 
 func (bc *BaseConfiguration) initBaseConfiguration() {
